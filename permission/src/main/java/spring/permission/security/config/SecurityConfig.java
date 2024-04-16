@@ -56,9 +56,22 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
                                 // Belirtilen URL'lere göre DELETE istekleri için yetkileri kontrol etme
                                 .requestMatchers(HttpMethod.DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
+
+
+                                .requestMatchers("/api/v1/admin/**").hasAnyRole(ADMIN.name())
+                                // Belirtilen URL'lere göre GET istekleri için yetkileri kontrol etme
+                                .requestMatchers(HttpMethod.GET, "/api/v1/admin/**").hasAnyAuthority(ADMIN_READ.name())
+                                // Belirtilen URL'lere göre POST istekleri için yetkileri kontrol etme
+                                .requestMatchers(HttpMethod.POST, "/api/v1/admin/**").hasAnyAuthority(ADMIN_CREATE.name())
+                                // Belirtilen URL'lere göre PUT istekleri için yetkileri kontrol etme
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/admin/**").hasAnyAuthority(ADMIN_UPDATE.name())
+                                // Belirtilen URL'lere göre DELETE istekleri için yetkileri kontrol etme
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/admin/**").hasAnyAuthority(ADMIN_DELETE.name())
+
                                 // Diğer tüm istekleri oturum açmış kullanıcılara izin verme
                                 .anyRequest().authenticated()
                 )
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

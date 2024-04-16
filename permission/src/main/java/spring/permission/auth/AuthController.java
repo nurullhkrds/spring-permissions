@@ -16,6 +16,8 @@ import spring.permission.security.dto.CreateUserRequest;
 import spring.permission.security.services.JwtService;
 import spring.permission.security.services.UserService;
 
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -36,19 +38,26 @@ public class AuthController {
 
 
     @PostMapping("/authenticate")
-    public String authenticate(AuthenticationRequest request) {
+    public String authenticate(@RequestBody AuthenticationRequest request) {
 
+        log.info("Authenticating user: {}", request.getUsername());
         authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
+                new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
                 )
         );
 
-        var user=repository.findByUsername(request.getUsername()).orElseThrow();
-        var jwtToken=jwtService.generateToken(user.getUsername());
-        return jwtToken;
+        Optional<User> userOptional = repository.findByEmail(request.getUsername());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            var jwtToken = jwtService.generateToken(user.getUsername());
+            return jwtToken;
+        } else {
+            return "Kullanıcı bulunamadı";
+        }
     }
+
 
 
 
