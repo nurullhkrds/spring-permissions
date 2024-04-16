@@ -34,9 +34,6 @@ public class SecurityConfig {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -71,7 +68,6 @@ public class SecurityConfig {
                                 // Diğer tüm istekleri oturum açmış kullanıcılara izin verme
                                 .anyRequest().authenticated()
                 )
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

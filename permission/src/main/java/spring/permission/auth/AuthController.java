@@ -3,20 +3,17 @@ package spring.permission.auth;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import spring.permission.entities.User;
-import spring.permission.repository.UserRepository;
-import spring.permission.security.dto.CreateUserRequest;
-import spring.permission.security.services.JwtService;
-import spring.permission.security.services.UserService;
+import spring.permission.Core.utilities.DataResult;
+import spring.permission.Core.utilities.Result;
 
-import java.util.Optional;
+import spring.permission.security.dto.CreateUserRequest;
+import spring.permission.security.services.AuthService;
+
+
 
 
 @RestController
@@ -25,37 +22,19 @@ import java.util.Optional;
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-    private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
-    private final UserRepository repository;
+    private final AuthService authService;
+
 
     @PostMapping("/register")
-    public User addUser(@RequestBody CreateUserRequest request) {
-        return userService.createUser(request);
+    public Result addUser(@RequestBody CreateUserRequest request) {
+        return authService.createUser(request);
     }
 
 
 
     @PostMapping("/authenticate")
-    public String authenticate(@RequestBody AuthenticationRequest request) {
-
-        log.info("Authenticating user: {}", request.getUsername());
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
-
-        Optional<User> userOptional = repository.findByEmail(request.getUsername());
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            var jwtToken = jwtService.generateToken(user.getUsername());
-            return jwtToken;
-        } else {
-            return "Kullanıcı bulunamadı";
-        }
+    public DataResult<String> authenticate(@RequestBody  AuthenticationRequest request) {
+        return authService.authenticate(request);
     }
 
 
